@@ -51,6 +51,11 @@ test('logout', async ({ page }) => {
     await expect(page.locator('#navbar-dark')).toContainText('Login');
 });
 
+test('history page loads', async ({ page }) => {
+  await page.goto('http://localhost:5173/history');
+  await expect(page.getByText('Mama Rucci, my my')).toBeVisible();
+});
+
 test('purchase with login', async ({ page }) => {
   await page.route('*/**/api/order/menu', async (route) => {
     const menuRes = [
