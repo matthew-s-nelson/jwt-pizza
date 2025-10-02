@@ -56,6 +56,11 @@ test('history page loads', async ({ page }) => {
   await expect(page.getByText('Mama Rucci, my my')).toBeVisible();
 });
 
+test('diner dashboard page loads', async ({ page }) => {
+  await page.goto('http://localhost:5173/diner-dashboard');
+  await expect(page.getByText('Your pizza kitchen')).toBeVisible();
+});
+
 test('purchase with login', async ({ page }) => {
   await page.route('*/**/api/order/menu', async (route) => {
     const menuRes = [
