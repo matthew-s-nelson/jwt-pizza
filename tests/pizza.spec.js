@@ -39,6 +39,18 @@ test('register', async ({ page }) => {
     await expect(page.locator('#navbar-dark')).toContainText('Logout');
 });
 
+test('logout', async ({ page }) => {
+    await login(page);
+
+    await page.route('**/api/auth', async (route) => {
+        const logoutRes = { message: 'Logout successful' };
+        expect(route.request().method()).toBe('DELETE');
+        await route.fulfill({ json: logoutRes });
+    });
+    await page.getByRole('link', { name: 'Logout' }).click();
+    await expect(page.locator('#navbar-dark')).toContainText('Login');
+});
+
 test('purchase with login', async ({ page }) => {
   await page.route('*/**/api/order/menu', async (route) => {
     const menuRes = [
