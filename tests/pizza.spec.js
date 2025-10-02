@@ -9,7 +9,34 @@ test('home page loads', async ({ page }) => {
 
 test('Login', async ({ page }) => {
     await login(page);
-    await expect(page.locator('#navbar-dark')).toContainText('Admin');;
+    await expect(page.locator('#navbar-dark')).toContainText('Admin');
+});
+
+test('register', async ({ page }) => {
+  await page.route('*/**/api/auth', async (route) => {
+    const registerReq = { name: 'New User', email: 'd@jwt.com', password: 'admin' };
+    const loginRes = {
+        user: {
+        id: 3,
+        name: 'Kai Chen',
+        email: 'd@jwt.com',
+        roles: [{ role: 'admin' }],
+        },
+        token: 'abcdef',
+    };
+    expect(route.request().method()).toBe('POST');
+    expect(route.request().postDataJSON()).toMatchObject(registerReq);
+    await route.fulfill({ json: loginRes });
+  });
+
+    await page.goto('http://localhost:5173/');
+
+    await page.getByRole('link', { name: 'Register' }).click();
+    await page.getByRole('textbox', { name: 'Full name' }).fill('New User');
+    await page.getByRole('textbox', { name: 'Email address' }).fill('d@jwt.com');
+    await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+    await page.getByRole('button', { name: 'Register' }).click();
+    await expect(page.locator('#navbar-dark')).toContainText('Logout');
 });
 
 test('purchase with login', async ({ page }) => {
