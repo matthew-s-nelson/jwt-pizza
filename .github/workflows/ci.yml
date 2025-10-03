@@ -40,6 +40,14 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           npm run test:coverage
+      - name: Check coverage threshold
+        run: |
+          coverage=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+          echo "Coverage: $coverage%"
+          if (( $(echo "$coverage < 80" | bc -l) )); then
+            echo "Coverage is below 80% threshold. Failing the build."
+            exit 1
+          fi
       - name: Update coverage
         run: |
           coverage=$(jq '.total.lines.pct' coverage/coverage-summary.json)
