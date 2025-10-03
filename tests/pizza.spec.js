@@ -170,6 +170,19 @@ test('purchase with login', async ({ page }) => {
   await expect(page.getByText('0.008')).toBeVisible();
 });
 
+test('delivery page works', async ({ page }) => {
+    await page.route('*/**/api/order/verify', async (route) => {
+        const orderRes = {
+            message: "invalid"
+        };
+        expect(route.request().method()).toBe('POST');
+        await route.fulfill({ json: orderRes });
+    });
+    await page.goto('http://localhost:5173/delivery');
+    await expect(page.getByText('Here is your JWT Pizza!')).toBeVisible();
+    await page.getByRole('button', { name: 'Verify' }).click();
+});
+
 test('about page loads', async ({ page }) => {
   await page.goto('http://localhost:5173/about');
   await expect(page.getByRole('link', { name: 'about', exact: true })).toBeVisible();
