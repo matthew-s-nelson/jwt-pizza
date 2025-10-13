@@ -52,6 +52,11 @@ export default function AdminDashboard(props: Props) {
     setUserList(await pizzaService.getUsers(franchisePage, 10, `*${filterUserRef.current?.value}*`));
   }
 
+  async function deleteUser(user: User) {
+    await pizzaService.deleteUser(user.id);
+    setUserList(await pizzaService.getUsers(userPage, 10, `*${filterUserRef.current?.value}*`));
+  }
+
   let response = <NotFound />;
   if (Role.isRole(props.user, Role.Admin)) {
     response = (
@@ -146,7 +151,7 @@ export default function AdminDashboard(props: Props) {
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="uppercase text-neutral-100 bg-slate-400 border-b-2 border-gray-500">
                         <tr>
-                          {['Name', 'Email', 'Role'].map((header) => (
+                          {['Name', 'Email', 'Role', 'Action'].map((header) => (
                             <th key={header} scope="col" className="px-6 py-3 text-center text-xs font-medium">
                               {header}
                             </th>
@@ -158,11 +163,17 @@ export default function AdminDashboard(props: Props) {
                           <tbody key={findex} className="divide-y divide-gray-200">
                             <tr className="border-neutral-500 border-t-2">
                               <td className="text-start px-2 whitespace-nowrap text-l font-mono text-orange-600">{user.name}</td>
-                              <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800" colSpan={3}>
+                              <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800" colSpan={1}>
                                 {user.email}
                               </td>
-                              <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800" colSpan={3}>
+                              <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800" colSpan={1}>
                                 {user.roles?.map((o: UserRole) => o.role).join(', ')}
+                              </td>
+                              <td>
+                                <button type="button" className="px-2 py-1 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-1 border-orange-400 text-orange-400  hover:border-orange-800 hover:text-orange-800" onClick={() => deleteUser(user)}>
+                                  <TrashIcon />
+                                  Delete
+                                </button>
                               </td>
                             </tr>
                           </tbody>
